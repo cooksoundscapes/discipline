@@ -4,12 +4,13 @@ project(discipline LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
-find_package(raylib REQUIRED)
+add_subdirectory(raylib)
 
 set(SOURCES src/main.cpp)
 
 include_directories(lib)
+link_directories(lib)
 
 add_executable(discipline ${SOURCES})
 
-target_link_libraries(discipline raylib lo lua)
+target_link_libraries(discipline lo lua raylib)
