@@ -80,6 +80,7 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp",
-        "export": "cpp"
+        "export": "cpp",
+        "hash_map": "cpp"
     }
 }

@@ -1,20 +1,23 @@
 #!/bin/bash
 
-git submodule update --init --recursive &&
+sho 
 
-PLATFORM = PLATFORM_DESKTOP
+PLATFORM="{1:-PLATFORM_DESKTOP}"
+
+git submodule update --init --recursive &&
 
 # follow Raylib github's wiki for more info on building
 cd raylib/src &&
 make PLATFORM=$PLATFORM &&
-make clean &&
 
-cd ../graphics &&
-mkdir build lib &&
+cd ../../graphics &&
+mkdir -p build lib &&
 cp ../raygui/src/* lib/ &&
 cp ../raylib/src/libraylib.a lib/ &&
-cp ../raylib/src/raylib.h lib/
+cp ../raylib/src/raylib.h lib/ &&
 
 cd build &&
 cmake .. &&
-make
+make &&
+cd ../../raylib/src &&
+make clean
