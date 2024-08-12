@@ -1,10 +1,18 @@
 #!/bin/bash
 
-# attention! build Raylib 1st and copy binary & header to /lib. each platform is different, probably
-
 git submodule update --init --recursive &&
-cp raygui/src/* lib/ &&
-mkdir build &&
+
+# follow Raylib github's wiki for more info on building
+cd raylib/src &&
+make PLATFORM=PLATFORM_DESKOP &&
+make clean &&
+
+cd ../graphics &&
+mkdir build lib &&
+cp ../raygui/src/* lib/ &&
+cp ../raylib/src/libraylib.a lib/ &&
+cp ../raylib/src/raylib.h lib/
+
 cd build &&
 cmake .. &&
 make
