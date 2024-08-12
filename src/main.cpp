@@ -1,4 +1,3 @@
-#include <lua.hpp>
 #include <lo/lo.h>
 
 #include <string>
@@ -50,19 +49,13 @@ int main() {
      * OSC setup
      */
     lo_server_thread server = lo_server_thread_new(OSC_PORT,
-    [](int num, const char *msg, const char *path){ // error handler
+    [](int num, const char *msg, const char *path){
         std::cout << "OSC server error " << num << " in path " << path << ": " << msg << '\n';
     });
     lo_server_thread_add_method(server, "/navigate", "s", navigate_handler, nullptr);
     lo_server_thread_add_method(server, "/param", "sf", param_handler, nullptr);
     lo_server_thread_start(server);
     std::cout << "Listening to OSC messages at port " << OSC_PORT << ";\n";
-
-    /**
-     * Lua setup
-     */
-    lua_State* L = luaL_newstate();
-    luaL_openlibs(L);
 
     /**
      * Raylib setup
@@ -80,7 +73,6 @@ int main() {
      * Cleanup and exit
      */
     CloseWindow();
-    lua_close(L);
     lo_server_thread_free(server);
     return 0;
 }

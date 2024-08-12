@@ -31,6 +31,7 @@ struct screen {
     std::function<void()> draw;
 
     std::unordered_map<const char*, float> params;
+
     void operator()() {
         draw();
     }
