@@ -1,4 +1,4 @@
-#include "../main.h"
+#include "../audio_utils.h"
 
 page synth{
     {
@@ -25,6 +25,9 @@ page synth{
     [](page::params& p, page::palette& palette){
         ClearBackground(BLACK);
         DrawRectangle(0, 0, SCREEN_W, 48, palette["main"]);
+
+        DrawRectangleLines(100, 100, 250, 100, RAYWHITE);
+        DrawOscilloscope(1, 100, 100, 250, 100, RAYWHITE);
     }
 };
 

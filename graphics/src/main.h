@@ -1,16 +1,21 @@
 #pragma once
 #include "raylib.h"
+#include "audio-sink.h"
 
 #include <iostream>
 #include <unordered_map>
 #include <functional>
 #include <string>
+#include <cmath>
 
 #define SCREEN_W 640
 #define SCREEN_H 480
 #define TARGET_FPS 60
 #define OSC_PORT "9000"
 #define HOME "home"
+#define AUDIO_CHANNEL_COUNT 8
+
+extern audio_sink* audio;
 
 /**
  * Inline helper functions
@@ -26,6 +31,9 @@ inline Color hex(const char* h) {
     };
 }
 
+/**
+ * page struct definition & page registering macro
+ */
 struct page {
     using params = std::unordered_map<std::string, float>;
     using palette = std::unordered_map<std::string, Color>;

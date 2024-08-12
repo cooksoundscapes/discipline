@@ -6,11 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 file(GLOB PAGES "src/pages/*.cpp")
 
-set(SOURCES src/main.cpp ${PAGES})
+set(SOURCES src/main.cpp src/audio-sink-impl.cpp ${PAGES})
 
 include_directories(lib)
 link_directories(lib)
 
 add_executable(discipline_graphics ${SOURCES})
 
-target_link_libraries(discipline_graphics lo raylib)
+target_link_libraries(discipline_graphics lo raylib jack rt)

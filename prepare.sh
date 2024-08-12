@@ -2,9 +2,11 @@
 
 git submodule update --init --recursive &&
 
+PLATFORM = PLATFORM_DESKTOP
+
 # follow Raylib github's wiki for more info on building
 cd raylib/src &&
-make PLATFORM=PLATFORM_DESKOP &&
+make PLATFORM=$PLATFORM &&
 make clean &&
 
 cd ../graphics &&

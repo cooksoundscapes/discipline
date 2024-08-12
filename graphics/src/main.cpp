@@ -3,6 +3,7 @@
 #include "main.h"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
+#include "audio-sink-impl.h"
 
 /**
  * Setup multiple page mechanism
@@ -36,9 +37,21 @@ int param_handler(const char* p, const char* t, lo_arg** argv, int argc, lo_mess
 }
 
 /**
+ * global audio objects
+ */
+audio_sink_impl jack_sink(AUDIO_CHANNEL_COUNT);
+audio_sink* audio;
+
+/**
  * Begin main function
  */
 int main() {
+    /**
+     * Audio setup
+     */
+    jack_sink.start();
+    audio = &jack_sink;
+
     /**
      * OSC setup
      */
@@ -70,6 +83,8 @@ int main() {
     /**
      * Cleanup and exit
      */
+    jack_sink.stop();
+    audio = nullptr;
     CloseWindow();
     lo_server_thread_free(server);
     return 0;
