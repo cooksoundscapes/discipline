@@ -8,6 +8,11 @@
 #include <lo/lo.h>
 #include "main.h"
 
+#define OSC_SEND_PORT "9001"
+#define OSC_ENCODER_PATH "/encoders/"
+#define OSC_NAV_BUTTONS_PATH "/nav-buttons/"
+#define OSC_SEQ_BUTTONS_PATH "/seq-buttons/"
+
 #define I2C_DEV "/dev/i2c-1"
 #define I2C_NAV_BUTTONS_ADDR 0x20
 #define I2C_LED_ARRAY_ADDR 0x21
@@ -32,6 +37,13 @@ int use_i2c_address(unsigned int addr) {
     }
     return i2c_fd;
 }
+/**
+ * OSC setup
+ */
+lo_address osc_addr;
+void send_osc(std::string p, float v) {
+    lo_send(osc_addr, p.c_str(), "f", v);
+}
 
 /**
  * GPIO Daemon setup
@@ -48,19 +60,33 @@ void gpio_callback(
     unsigned int tick,
     void* user_data
 ) {
-    auto i2c_fd_id = static_cast<int*>(user_data);
-    switch(pin) {
-        case GPIO_NAV_BUTTONS_INT_PIN:
-        case GPIO_SEQ_BUTTONS_INT_PIN:
-            //auto state = read_button_data(*i2c_fd_id);
-            break;
-        case GPIO_ENCODERS_INT_PIN:
-            //auto state = read_encoder_data(*i2c_fd_id);
-            break;
-        default:
-            break;
+    if (level == 0) {
+        auto i2c_fd_id = static_cast<int*>(user_data);
+        if (
+            pin == GPIO_NAV_BUTTONS_INT_PIN || 
+            pin == GPIO_SEQ_BUTTONS_INT_PIN
+        ) {
+            auto state = read_button_data(*i2c_fd_id);
+            for (int p : state) {
+                if (p != 0) {
+                    std::string path = 
+                        (pin == GPIO_NAV_BUTTONS_INT_PIN ?
+                            OSC_NAV_BUTTONS_PATH :
+                            OSC_SEQ_BUTTONS_PATH
+                        ) + std::to_string(pin);
+                    send_osc(path, state[p]);   
+                }
+            }
+        } else if (pin == GPIO_ENCODERS_INT_PIN) {
+            auto state = read_encoder_data(*i2c_fd_id);
+            for (int p : state) {
+                if (p != 0) {
+                    std::string path = OSC_ENCODER_PATH + std::to_string(pin);
+                    send_osc(path, state[p]);
+                }
+            }
+        }
     }
-    // liblo logic? also, map pin to device is here
 }
 
 void add_gpio_interrupt(int pin, int* i2c_fd_id) {
@@ -73,6 +99,8 @@ void add_gpio_interrupt(int pin, int* i2c_fd_id) {
  * Main function
  */
 int main() {
+    osc_addr = lo_address_new(NULL, OSC_SEND_PORT);
+
     int nav_buttons = use_i2c_address(I2C_NAV_BUTTONS_ADDR);
     int led_array = use_i2c_address(I2C_LED_ARRAY_ADDR);
     int seq_buttons = use_i2c_address(I2C_SEQ_BUTTONS_ADDR);
@@ -99,5 +127,6 @@ int main() {
     for (int cb_id : gpio_cb_ids) {
         callback_cancel(cb_id);
     }
+    lo_address_free(osc_addr);
     pigpio_stop(gpio_d);
 }
