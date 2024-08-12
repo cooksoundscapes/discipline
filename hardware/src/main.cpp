@@ -52,10 +52,10 @@ void gpio_callback(
     switch(pin) {
         case GPIO_NAV_BUTTONS_INT_PIN:
         case GPIO_SEQ_BUTTONS_INT_PIN:
-            auto state = read_button_ata(i2c_fd_id);
+            //auto state = read_button_data(*i2c_fd_id);
             break;
         case GPIO_ENCODERS_INT_PIN:
-            auto state = read_encoder_data(i2c_fd_id);
+            //auto state = read_encoder_data(*i2c_fd_id);
             break;
         default:
             break;
@@ -63,10 +63,10 @@ void gpio_callback(
     // liblo logic? also, map pin to device is here
 }
 
-void add_gpio_interrupt(int pin, int&i2c_fd_id) {
+void add_gpio_interrupt(int pin, int* i2c_fd_id) {
     set_mode(gpio_d, pin, PI_INPUT);
     set_pull_up_down(gpio_d, pin, PI_PUD_UP);
-    gpio_cb_ids.push_back(callback_ex(daemon, pin, EITHER_EDGE, gpio_callback, i2c_fd_id));
+    gpio_cb_ids.push_back(callback_ex(gpio_d, pin, EITHER_EDGE, gpio_callback, i2c_fd_id));
 }
 
 /**
@@ -82,9 +82,9 @@ int main() {
         std::cerr << "Error while initializing GPIO Daemon\n";
         return 1;
     }
-    add_gpio_interrupt(GPIO_NAV_BUTTONS_INT_PIN, nav_buttons);
-    add_gpio_interrupt(GPIO_SEQ_BUTTONS_INT_PIN, seq_buttons);
-    add_gpio_interrupt(GPIO_ENCODERS_INT_PIN, encoders);
+    add_gpio_interrupt(GPIO_NAV_BUTTONS_INT_PIN, &nav_buttons);
+    add_gpio_interrupt(GPIO_SEQ_BUTTONS_INT_PIN, &seq_buttons);
+    add_gpio_interrupt(GPIO_ENCODERS_INT_PIN, &encoders);
 
     // live until called out
     while(true) {}
