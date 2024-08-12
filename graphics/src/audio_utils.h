@@ -17,11 +17,18 @@ inline void DrawOscilloscope(int channel, int x, int y, int w, int h, Color colo
     }
 }
 
-inline double RMS(std::vector<float> b) {
+inline double RMS(std::vector<float> b, double& last_rms) {
+    float alpha{0.1}; // for EMA (exponential moving average)
+
     if (b.empty()) return 0.0f;
     double rms{0};
     for (float s : b) {
         rms += s * s;
     }
-    return std::sqrt(rms/b.size());
+    rms = std::sqrt(rms/b.size()) / 0.74f; // sinewave normalization
+
+    //smoothing
+    rms = alpha * rms + (1 - alpha) * (last_rms || 0);
+    last_rms = rms;
+    return rms;
 }

@@ -35,7 +35,17 @@ inline Color hex(const char* h) {
  * page struct definition & page registering macro
  */
 struct page {
-    using params = std::unordered_map<std::string, float>;
+    struct param {
+        float value;
+        float min;
+        float max;
+        // when assigning a param object to a variable,
+        // it will pass a pointer to value instead!
+        operator float*() {
+            return &value;
+        }
+    };
+    using params = std::unordered_map<std::string, param>;
     using palette = std::unordered_map<std::string, Color>;
 
     page() = default;
@@ -69,7 +79,7 @@ struct page {
     }
 
     void set(std::string& k, float v) {
-        p_map[k] = v;
+        p_map[k].value = v;
     }
 };
 
