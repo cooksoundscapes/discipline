@@ -4,7 +4,7 @@ class audio_sink_impl : public audio_sink
 {
 public:
     audio_sink_impl(int n_channel) {}
-    ~audio_sink_impl();
+    ~audio_sink_impl() {}
 
     void start() override {}
     void stop() override {}

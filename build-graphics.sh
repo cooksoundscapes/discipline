@@ -3,7 +3,8 @@
 RAYLIB_PLATFORM="${1:-PLATFORM_DESKTOP}"
 
 echo "Initializing Git submodules..." &&
-git submodule update --init --recursive &&
+git submodule init raylib raygui &&
+git submodule update &&
 
 # follow Raylib github's wiki for more info on building
 echo "Building Raylib from source..." &&

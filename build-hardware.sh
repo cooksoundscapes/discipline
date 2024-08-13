@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Initializing Git submodules..." &&
+git submodule init pigpio &&
+git submodule update &&
+
 echo "Building PIGPIOD library..."
 cd ../../pigpio &&
 make &&
