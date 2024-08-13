@@ -6,11 +6,21 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 file(GLOB PAGES "src/pages/*.cpp")
 
-set(SOURCES src/main.cpp src/audio-sink-impl.cpp ${PAGES})
+set(SOURCES src/main.cpp ${PAGES})
+
+option(JACK_SINK "embed JACK client" ON)
+if (JACK_SINK)
+    add_definitions(-DJACK_SINK)
+    list(APPEND SOURCES src/audio-sink-jack.cpp)
+endif()
 
 include_directories(lib)
 link_directories(lib)
 
 add_executable(discipline_graphics ${SOURCES})
 
-target_link_libraries(discipline_graphics lo raylib jack rt)
+target_link_libraries(discipline_graphics lo raylib)
+
+if (JACK_SINK)
+    target_link_libraries(discipline_graphics jack)
+endif()

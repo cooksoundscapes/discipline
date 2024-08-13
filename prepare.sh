@@ -10,7 +10,9 @@ echo "Building Raylib from source..." &&
 cd raylib/src &&
 make PLATFORM=$RAYLIB_PLATFORM &&
 
-echo "Gnerating graphics build & lib directories and adding compiled libs & headers..." &&
+echo "#---------------------------------------------------------------#
+Gnerating graphics build & lib directories and adding compiled libs & headers...
+#---------------------------------------------------------------#" &&
 cd ../../graphics &&
 mkdir -p build lib &&
 cp ../raygui/src/* lib/ &&
@@ -32,7 +34,9 @@ echo "Building PIGPIOD library..."
 cd ../../pigpio &&
 make &&
 
-echo "Generating hardware build & lib directories & adding compiled libs & headers..." &&
+echo "#---------------------------------------------------------------#
+Generating hardware build & lib directories & adding compiled libs & headers...
+#---------------------------------------------------------------#" &&
 cd ../hardware &&
 mkdir -p lib build &&
 cp ../pigpio/libpigpio.so lib/ &&
