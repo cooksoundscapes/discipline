@@ -85,10 +85,10 @@ struct page {
 /**
  * globals
  */
-static inline std::unordered_map<std::string, page> pages{};
-static inline std::mutex mtx;
-static inline std::string current_page{HOME};
-static inline audio_sink* audio = nullptr;
+extern std::unordered_map<std::string, page> pages;
+extern std::mutex mtx;
+extern std::string current_page;
+extern audio_sink* audio;
 
 /**
  * Macro for registering pages

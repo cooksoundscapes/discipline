@@ -1,4 +1,4 @@
-#include "jack-sink-impl.h"
+#include "audio-sink-jack.h"
 #include <iostream>
 #include <string>
 
