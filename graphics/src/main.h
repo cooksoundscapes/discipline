@@ -7,6 +7,7 @@
 #include <functional>
 #include <string>
 #include <cmath>
+#include <mutex>
 
 #define SCREEN_W 640
 #define SCREEN_H 480
@@ -14,8 +15,6 @@
 #define OSC_PORT "9000"
 #define HOME "home"
 #define AUDIO_CHANNEL_COUNT 8
-
-extern audio_sink* audio;
 
 /**
  * Inline helper functions
@@ -83,12 +82,22 @@ struct page {
     }
 };
 
-extern std::unordered_map<std::string, page> pages;
+/**
+ * globals
+ */
+static inline std::unordered_map<std::string, page> pages{};
+static inline std::mutex mtx;
+static inline std::string current_page{HOME};
+static inline audio_sink* audio = nullptr;
 
+/**
+ * Macro for registering pages
+ */
 #define REGISTER_PAGE(page_name) \
     extern page page_name; \
     static struct Register_##page_name { \
         Register_##page_name() { \
+            std::cout << "Registering page " << #page_name << '\n'; \
             pages[#page_name] = page_name; \
         } \
     } register_##page_name;

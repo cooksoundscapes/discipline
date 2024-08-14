@@ -2,10 +2,6 @@
 #include <iostream>
 #include <string>
 
-audio_sink_impl::~audio_sink_impl() {
-    stop();
-}
-
 void audio_sink_impl::start() {
     buffers.resize(n_channel);
     client = jack_client_open("discipline", JackNullOption, NULL);

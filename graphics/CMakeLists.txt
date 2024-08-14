@@ -8,19 +8,19 @@ file(GLOB PAGES "src/pages/*.cpp")
 
 set(SOURCES src/main.cpp ${PAGES})
 
-option(JACK_SINK "embed JACK client" ON)
-if (JACK_SINK)
-    add_definitions(-DJACK_SINK)
-    list(APPEND SOURCES src/audio-sink-jack.cpp)
-endif()
+if (NOT WIN32)
+    list(APPEND SOURCES src/audio-sink-jack.cpp src/osc-server.cpp)
+endif()    
 
 include_directories(lib)
 link_directories(lib)
 
 add_executable(discipline_graphics ${SOURCES})
 
-target_link_libraries(discipline_graphics lo raylib)
+target_link_libraries(discipline_graphics raylib)
 
-if (JACK_SINK)
-    target_link_libraries(discipline_graphics jack)
+if (WIN32)
+    target_link_libraries(discipline_graphics gdi32 winmm)
+else()
+    target_link_libraries(discipline_graphics lo jack)
 endif()

@@ -6,9 +6,6 @@ public:
     audio_sink_impl(int n_channel) {}
     ~audio_sink_impl() {}
 
-    void start() override {}
-    void stop() override {}
-
     // expects range 1~n_channel
     const std::vector<float>& get_buffer(int ch) override {
         static auto dummy = std::vector<float>(0);
