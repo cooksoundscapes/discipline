@@ -9,10 +9,10 @@
 #include <cmath>
 #include <mutex>
 
-#define SCREEN_W 640
-#define SCREEN_H 480
+#define SCREEN_W 320
+#define SCREEN_H 240
 #define TARGET_FPS 60
-#define OSC_PORT "9000"
+#define OSC_PORT "7777"
 #define HOME "home"
 #define AUDIO_CHANNEL_COUNT 8
 
@@ -38,14 +38,15 @@ struct page {
         float value;
         float min;
         float max;
-        // when assigning a param object to a variable,
-        // it will pass a pointer to value instead!
-        operator float*() {
-            return &value;
-        }
+        bool is_int;
+        float pow;
+        float mult;
     };
     using params = std::unordered_map<std::string, param>;
     using palette = std::unordered_map<std::string, Color>;
+
+    params p_map{};
+    palette c_map{};
 
     page() = default;
 
@@ -54,24 +55,21 @@ struct page {
     : draw(draw_fn) {}
 
     // parameters only
-    page(params init_params, std::function<void(params&)> draw_fn)
-    : p_map(init_params), draw([this, draw_fn](){ draw_fn(this->p_map); }) {}
+    page(params& init_params, std::function<void(params&)> draw_fn)
+    : p_map(init_params), draw([this, draw_fn](){ draw_fn(p_map); }) {}
 
     // palette only
     page(palette colors, std::function<void(palette&)> draw_fn)
-    : c_map(colors), draw([this, draw_fn](){ draw_fn(this->c_map); }) {}
+    : c_map(colors), draw([this, draw_fn](){ draw_fn(c_map); }) {}
 
     // parameters & palette
     page(
         params init_params,
         palette colors,
         std::function<void(params&, palette&)> draw_fn
-    ) : p_map(init_params), c_map(colors), draw([this, draw_fn](){ draw_fn(this->p_map, this->c_map); }) {}
+    ) : p_map(init_params), c_map(colors), draw([this, draw_fn](){ draw_fn(p_map, c_map); }) {}
     
     std::function<void()> draw;
-
-    params p_map{};
-    palette c_map{};
 
     void operator()() { 
         draw();
@@ -85,10 +83,10 @@ struct page {
 /**
  * globals
  */
-extern std::unordered_map<std::string, page> pages;
-extern std::mutex mtx;
-extern std::string current_page;
-extern audio_sink* audio;
+inline std::unordered_map<std::string, page*> pages{};
+inline std::mutex mtx;
+inline std::string current_page{HOME};
+inline audio_sink* audio = nullptr;
 
 /**
  * Macro for registering pages
@@ -97,7 +95,8 @@ extern audio_sink* audio;
     extern page page_name; \
     static struct Register_##page_name { \
         Register_##page_name() { \
-            std::cout << "Registering page " << #page_name << '\n'; \
-            pages[#page_name] = page_name; \
+            std::cout << "Registering page " << #page_name << ";\n"; \
+            pages[#page_name] = &page_name; \
         } \
     } register_##page_name;
+

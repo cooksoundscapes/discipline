@@ -2,8 +2,10 @@
 
 page home {
     [](){
-        ClearBackground(DARKGRAY);
-        DrawText("HELLO, HANDSOME", SCREEN_W/3, SCREEN_H/3, 20, RAYWHITE);
+        ClearBackground(BLACK);
+        const char* hi = "HELLO, HANDSOME";
+        int t_siz = MeasureText(hi, 20);
+        DrawText("HELLO, HANDSOME", (SCREEN_W - t_siz) / 2, SCREEN_H/3, 20, RAYWHITE);
     }
 };
 

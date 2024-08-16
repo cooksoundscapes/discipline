@@ -16,7 +16,7 @@ int param_handler(const char* p, const char* t, lo_arg** argv, int argc, lo_mess
     std::lock_guard<std::mutex> lock(mtx);
     std::string key = &argv[0]->s;
     float value = argv[1]->f;
-    pages[current_page].set(key, value);
+    pages[current_page]->set(key, value);
     return 0;
 }
 

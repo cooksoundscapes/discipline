@@ -9,17 +9,9 @@
     #include "audio-sink-dummy.h"
 #endif
 
-/**
- * globals
- */
-std::unordered_map<std::string, page> pages{};
-std::mutex mtx;
-std::string current_page{HOME};
-audio_sink* audio = nullptr;
-
 inline void safe_draw() {
     std::lock_guard<std::mutex> lock(mtx);
-    pages[current_page]();
+    pages[current_page]->draw();
 }
 
 /**
@@ -29,6 +21,7 @@ int main() {
     #ifdef __linux__
         osc_server serv;
     #endif
+
     audio_sink_impl snd_inputs(AUDIO_CHANNEL_COUNT);
     audio = &snd_inputs;
 
@@ -52,6 +45,9 @@ int main() {
     /**
      * Cleanup and exit
      */
+    for (auto& pp : pages) {
+        pp.second = nullptr;
+    }
     audio = nullptr;
     CloseWindow();
     return 0;
