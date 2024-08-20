@@ -33,8 +33,20 @@ int main() {
     /**
      * Raylib setup
      */
+
+    // get rid of antialias in textures...
     InitWindow(SCREEN_W, SCREEN_H, "Discipline");
     SetTargetFPS(TARGET_FPS);
+
+    for (auto& page : pages) {
+        page.second->load_textures();
+    }
+
+    // initialize custom global fonts
+    font_mono = LoadFont(MONOSPACE_FONT);
+    SetTextureFilter(font_mono.texture, TEXTURE_FILTER_BILINEAR);
+    font_regular = LoadFont(REGULAR_FONT);
+    SetTextureFilter(font_regular.texture, TEXTURE_FILTER_BILINEAR);
 
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -42,6 +54,9 @@ int main() {
         EndDrawing();
     }
 
+    for (auto& page : pages) {
+        page.second->unload_textures();
+    }
     /**
      * Cleanup and exit
      */
