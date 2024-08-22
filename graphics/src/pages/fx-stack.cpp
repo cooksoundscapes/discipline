@@ -4,6 +4,7 @@
         K2 ?????
         K3 GANHO
         K4 OUTPUT VOLUME
+        ***: mais info sobre latencia, interface, inputs...
 
     PAGINA 2 - MODULAÇÕES
         K1 LFO_1 - NONE / VOLUME / FILTER / DOUBLER / LO-FI
@@ -60,14 +61,14 @@
 enum PAGE {
     GENERAL = 0,
     MODULATION,
-    MODULATION_DETAILS_LFO1,
-    MODULATION_DETAILS_LFO2,
-    MODULATION_DETAILS_ENV,
-    MODULATION_DETAILS_NOISE,
     DEGRADE,
     FILTER,
     DELAY,
-    DELAY_OTHER
+    DELAY_OTHER,
+    MODULATION_DETAILS_LFO1,
+    MODULATION_DETAILS_LFO2,
+    MODULATION_DETAILS_ENV,
+    MODULATION_DETAILS_NOISE
 };
 
 enum MODULATION {
@@ -124,13 +125,24 @@ static constexpr int PARAM_AREA_H = SCREEN_H - HEADER_H;
 static constexpr int INSTR_IN = 1;
 static constexpr int INSTR_OUT = 2;
 
-static const std::unordered_map<int, int> mod_target_opts_lfo = {
+static const std::unordered_map<int, int> mod_target_opts_lfo1 = {
   {NONE, 0},
   {VOLUME, 1},
   {FILT_CUTOFF, 2},
   {DOUBLER, 3},
   {LO_FI, 4}
 };
+
+static const std::unordered_map<int, int> mod_target_opts_lfo2 = {
+  {NONE, 0},
+  {VOLUME, 1},
+  {FILT_CUTOFF, 2},
+  {DOUBLER, 3},
+  {LO_FI, 4},
+  {LFO_1_RATE, 5},
+  {LFO_1_DEPTH, 6}
+};
+
 static const std::unordered_map<int, int> mod_target_opts_env = {
   {NONE, 0},
   {FILT_CUTOFF, 1},
@@ -172,20 +184,20 @@ page fx_stack = {
         {"noise-depth", {0}},
         {"noise-steps", {0}},
         {"noise-seed", {0}},
-        {"quantizer", {0, 0, 0.2}}, // testar o range
-        {"decimator", {0, 0, 0.9}}, // testar o range
-        {"doubler-amt", {0}},
-        {"doubler-delay", {0}},
+        {"quantizer", {0, 0, 1}},
+        {"decimator", {0, 0, 1}},
+        {"doubler-amt", {0, 0, 1}},
+        {"doubler-delay", {0, 0, 1}},
         {"filter-cutoff", {1, 0, 1}},
         {"filter-q", {0.2, 0.05, 1}},
         {"filter-type", {FILT_TYPE::LOWPASS}},
-        {"delay-level", {0}},
-        {"delay-fdbk", {0.3}},
-        {"delay-time", {0}},
+        {"delay-level", {0, 0, 1}},
+        {"delay-fdbk", {0, 0, 1}},
+        {"delay-time", {0, 0, 1}},
         {"delay-ratio", {BPM_RATIO::EIGHT_D}},
-        {"delay-hipass", {0}},
-        {"delay-lopass", {0}},
-        {"delay-mod", {0}}
+        {"delay-hip", {0, 0, 1}},
+        {"delay-lop", {0, 0, 1}},
+        {"delay-mod", {0, 0, 1}}
     },
     {
         {"red", hex("#EF3E36")},
@@ -244,7 +256,7 @@ page fx_stack = {
                     case MOD_TARGET::DOUBLER: {
                         RegText("LFO 1 (Chorus) Settings", 32, 32, 24, palette["rose"]);
                         RegText("Rate: " + f2s(params["lfo-1-rate"]) + "Hz", 32, 64, 20, RAYWHITE);
-                        RegText("Depth: " + f2s(params["lfo-1-depth"]) + "ms", 32, 92, 20, RAYWHITE);
+                        RegText("Depth: " + f2s(params["lfo-1-depth"]) + "%", 32, 92, 20, RAYWHITE);
                         break;
                     }
                     case MOD_TARGET::LO_FI: {
@@ -281,11 +293,23 @@ page fx_stack = {
                     case MOD_TARGET::DOUBLER: {
                         RegText("LFO 2 (Chorus) Settings", 32, 32, 24, palette["rose"]);
                         RegText("Rate: " + f2s(params["lfo-2-rate"]) + "Hz", 32, 64, 20, RAYWHITE);
-                        RegText("Depth: " + f2s(params["lfo-2-depth"]) + "ms", 32, 92, 20, RAYWHITE);
+                        RegText("Depth: " + f2s(params["lfo-2-depth"]) + "%", 32, 92, 20, RAYWHITE);
                         break;
                     }
                     case MOD_TARGET::LO_FI: {
                         RegText("LFO 2 (Lo-Fi) Settings", 32, 32, 24, palette["blu"]);
+                        RegText("Rate: " + f2s(params["lfo-2-rate"]) + "Hz", 32, 64, 20, RAYWHITE);
+                        RegText("Depth: " + f2s(params["lfo-2-depth"]) + "%", 32, 92, 20, RAYWHITE);
+                        break;
+                    }
+                    case MOD_TARGET::LFO_1_RATE: {
+                        RegText("LFO 2 (LFO 1 Rate) Settings", 32, 32, 24, palette["blu"]);
+                        RegText("Rate: " + f2s(params["lfo-2-rate"]) + "Hz", 32, 64, 20, RAYWHITE);
+                        RegText("Depth: " + f2s(params["lfo-2-depth"]) + "%", 32, 92, 20, RAYWHITE);
+                        break;
+                    }
+                    case MOD_TARGET::LFO_1_DEPTH: {
+                        RegText("LFO 2 (LFO 1 Depth) Settings", 32, 32, 24, palette["blu"]);
                         RegText("Rate: " + f2s(params["lfo-2-rate"]) + "Hz", 32, 64, 20, RAYWHITE);
                         RegText("Depth: " + f2s(params["lfo-2-depth"]) + "%", 32, 92, 20, RAYWHITE);
                         break;
@@ -328,10 +352,8 @@ page fx_stack = {
                         break;
                 }
                 if (target > 0) {
-                    RegText("Gain: " + f2s(params["env-gain"]) + "dB", 32, 64, 20, RAYWHITE);
+                    RegText("Gain: +" + f2s(params["env-gain"]) + "dB", 32, 64, 20, RAYWHITE);
                     RegText("Decay: " + f2s(params["env-decay"]) + " (pow)", 32, 92, 20, RAYWHITE);
-                    RegText("Floor: " + f2s(params["env-min"]), 32, 124, 20, RAYWHITE);
-                    RegText("Ceil: " + f2s(params["env-max"]), 32, 156, 20, RAYWHITE);
                 }
                 break;
             }
@@ -376,7 +398,7 @@ page fx_stack = {
                 RegText("LFO 1", 32, HEADER_H+SPACING, 24, RAYWHITE);
                 TextList(
                     "None\nVolume\nCutoff\nDoubler\nLo-Fi",
-                    mod_target_opts_lfo,
+                    mod_target_opts_lfo1,
                     32,
                     HEADER_H+32,
                     params["lfo-1-target"],
@@ -386,8 +408,8 @@ page fx_stack = {
 
                 RegText("LFO 2", 32+64, HEADER_H+SPACING, 24, RAYWHITE);
                 TextList(
-                    "None\nVolume\nCutoff\nDoubler\nLo-Fi",
-                    mod_target_opts_lfo,
+                    "None\nVolume\nCutoff\nDoubler\nLo-Fi\nlfo1 spd\nlfo1 int",
+                    mod_target_opts_lfo2,
                     32+64,
                     HEADER_H+32,
                     params["lfo-2-target"],
@@ -443,8 +465,8 @@ page fx_stack = {
                 MonoText("                  Amb", 4, 4, MENU_FONT, WHITE);
                 MonoText("Gen Mod Dist Filt", 4, 4, MENU_FONT, BLACK);
 
-                HSlider({32, 32, 90, 16}, "HiCut", params["delay-lopass"]);
-                HSlider({32, 64, 90, 16}, "LoCut", params["delay-hipass"]);
+                HSlider({32, 32, 90, 16}, "HiCut", params["delay-lop"]);
+                HSlider({32, 64, 90, 16}, "LoCut", params["delay-hip"]);
                 HSlider({32, 96, 90, 16}, "Mod. Amount", params["delay-mod"]);
                 break;
             }

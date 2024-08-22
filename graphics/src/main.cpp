@@ -33,8 +33,6 @@ int main() {
     /**
      * Raylib setup
      */
-
-    // get rid of antialias in textures...
     InitWindow(SCREEN_W, SCREEN_H, "Discipline");
     SetTargetFPS(TARGET_FPS);
 
