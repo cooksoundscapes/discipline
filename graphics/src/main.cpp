@@ -1,6 +1,10 @@
 #include "main.h"
-#define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
+
+/**
+ * taking off raygui for now
+ * #define RAYGUI_IMPLEMENTATION
+ * #include "raygui.h"
+ */
 
 #ifdef __linux__
     #include "audio-sink-jack.h"

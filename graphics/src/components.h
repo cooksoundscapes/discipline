@@ -79,12 +79,27 @@ inline Color hueShift(float r) {
     return c;
 }
 
+constexpr double max_db = 0.0;
+constexpr double min_db = -100.0;
+
 inline void VUMeterV(float x, float y, int w, float h, int chan) {
     auto rms = RMS(chan);
-    DrawRectangleLines  (x, y, w, h, RAYWHITE);
+
+    double decibels;
+    if (rms <= 0.0) {
+        decibels = -INFINITY;
+    } else {
+        decibels = 20 * log10(rms);
+    }
+    // normalization
+    decibels = (decibels - min_db) / (max_db - min_db);
+    decibels = pow(10, decibels - 1);
+    decibels = std::max(0.0, std::min(1.0, decibels));
+
+    DrawRectangleLines  (x, y,  w, h, RAYWHITE);
 
     int segment_h = h / VU_SEGMENTS;
-    int n_segments = (rms * h) / segment_h;
+    int n_segments = (decibels * h) / segment_h;
 
     for (int i{0}; i < n_segments; i++) {
         DrawRectangle(x+2, y - 1 + (int)(h - (i+1)*segment_h), w-4, segment_h-1, hueShift((i+1)/(float)VU_SEGMENTS));

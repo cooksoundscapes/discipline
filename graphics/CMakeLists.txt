@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED true)
 
 file(GLOB PAGES "src/pages/*.cpp")
 
-set(SOURCES src/main.cpp ${PAGES})
+set(SOURCES src/main.cpp src/audio-math-utils.cpp ${PAGES})
 
 if (NOT WIN32)
     list(APPEND SOURCES src/audio-sink-jack.cpp src/osc-server.cpp)
