@@ -20,6 +20,26 @@ int param_handler(const char* p, const char* t, lo_arg** argv, int argc, lo_mess
     return 0;
 }
 
+int param_list_handler(const char* p, const char* t, lo_arg** argv, int argc, lo_message data, void* userData) {
+    if (t[0] != 's') return 0;
+
+    std::string name = &argv[0]->s;
+    std::vector<float> values{};
+
+    for (int i = 1; i < argc-1; i++) {
+        if (t[i] == 'f') {
+            values.push_back(argv[i]->f);
+        }
+    }
+    if (param_lists.find(name) == param_lists.end()) {
+        param_lists.insert({name, values});
+    } else {
+        param_lists[name] = values;
+    }
+
+    return 0;
+}
+
 osc_server::osc_server() {
     server = lo_server_thread_new(
         OSC_PORT,
@@ -33,6 +53,7 @@ osc_server::osc_server() {
     }
     lo_server_thread_add_method(server, "/navigate", "s", navigate_handler, nullptr);
     lo_server_thread_add_method(server, "/param", "sf", param_handler, nullptr);
+    lo_server_thread_add_method(server, "/param-list", nullptr, param_list_handler, nullptr);
     lo_server_thread_start(server);
     std::cout << "Listening to OSC messages at port " << OSC_PORT << ";\n";
 }

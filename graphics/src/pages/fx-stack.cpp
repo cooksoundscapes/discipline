@@ -195,8 +195,8 @@ page fx_stack = {
         {"decimator", {0, 0, 1}},
         {"doubler-amt", {0, 0, 1}},
         {"doubler-delay", {0, 0, 1}},
-        {"filter-cutoff", {1, 0, 1}},
-        {"filter-q", {0.2, 0.05, 1}},
+        {"filter-cutoff", {1, 0, 21000}},
+        {"filter-q", {0.2, 0, 4}},
         {"filter-type", {FILT_TYPE::LOWPASS}},
         {"delay-level", {0, 0, 1}},
         {"delay-fdbk", {0, 0, 1}},
@@ -494,9 +494,6 @@ page fx_stack = {
 
                 HSlider({32, 32, 90, 16}, "Cutoff", params["filter-cutoff"]);
                 HSlider({32, 64, 90, 16}, "Q", params["filter-q"]);
-                DrawTexture(textures["lop"], 32, 120, WHITE);
-                DrawTexture(textures["hip"], 64, 120, WHITE);
-                DrawTexture(textures["bandpass"], 96, 120, WHITE);
                 break;
             }
             case DELAY_OTHER: {

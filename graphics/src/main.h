@@ -128,6 +128,7 @@ inline std::unordered_map<std::string, page*> pages{};
 inline std::mutex mtx;
 inline std::string current_page{HOME};
 inline audio_sink* audio = nullptr;
+inline std::unordered_map<std::string, std::vector<float>> param_lists{};
 
 // global fonts
 #define MONOSPACE_FONT "../assets/fonts/Big Pixel demo.otf"
