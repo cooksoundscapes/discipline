@@ -211,8 +211,8 @@ page fx_stack = {
                 MonoText("Gen", 4, 4, MENU_FONT, WHITE);
                 MonoText("    Mod Dist Filt Amb", 4, 4, MENU_FONT, BLACK);
 
-                VSlider({32, HEADER_H + 28, 20, 160}, "gain", params["gain"], "dB");
-                VSlider({PARAM_AREA_W - 48, HEADER_H + 28, 20, 160}, "master", params["master-volume"], "dB");
+                VSlider({32, HEADER_H + 28, 20, 160}, "gain", params["gain"], -50, 12, "dB");
+                VSlider({PARAM_AREA_W - 48, HEADER_H + 28, 20, 160}, "master", params["master-volume"], -50, 12, "dB");
                 break;
             }
             case MODULATION_DETAILS_LFO1: {
@@ -456,8 +456,8 @@ page fx_stack = {
                 MonoText("             Filt", 4, 4, MENU_FONT, WHITE);
                 MonoText("Gen Mod Dist      Amb", 4, 4, MENU_FONT, BLACK);
 
-                HSlider({32, 32, 90, 16}, "Cutoff", params["filter-cutoff"]);
-                HSlider({32, 64, 90, 16}, "Q", params["filter-q"]);
+                HSlider({32, 32, 90, 16}, "Cutoff", params["filter-cutoff"], 0, 21000);
+                HSlider({32, 64, 90, 16}, "Q", params["filter-q"], 0, 4);
                 break;
             }
             case DELAY_OTHER: {

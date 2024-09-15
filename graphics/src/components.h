@@ -32,9 +32,13 @@ void DrawBuffer(const Container& buff, int x, int y, int w, int h, double min, d
 
 extern void DrawOscilloscope(int channel, int x, int y, int w, int h, Color color);
 
-extern void HSlider(Rectangle bounds, const char* name, page::param& p);
+extern void HSlider(Rectangle bounds, const char* name, float level);
 
-extern void VSlider(Rectangle bounds, const char* name, page::param& p, std::string postfix);
+extern void HSlider(Rectangle bounds, const char* name, float level, float min, float max);
+
+extern void VSlider(Rectangle bounds, const char* name, float level, float min, float max, std::string postfix);
+
+extern void VSlider(Rectangle bounds, const char* name, float level, std::string postfix);
 
 extern Color hueShift(float r);
 

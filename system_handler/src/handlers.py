@@ -5,9 +5,8 @@ from time import sleep
 '''
 UI:
 * CPU load
-* JACk status
-* static IP
-pd status
+* JACK status
+* PD status
 jack change preset:
     filtra a lista de presets só pelos cards que existem em self.sound_cards;
     ultima opção é um "other" e aí vc pode escolher um card que nao tem preset

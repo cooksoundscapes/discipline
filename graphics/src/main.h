@@ -42,18 +42,7 @@ inline std::string f2s(float f) {
  * page struct definition & page registering macro
  */
 struct page {
-    struct param {
-        float value;
-        float min;
-        float max;
-        bool is_int;
-        float pow;
-        float mult;
-        operator float() {
-            return value;
-        }
-    };
-    using p_map = std::unordered_map<std::string, param>;
+    using p_map = std::unordered_map<std::string, float>;
     using c_map = std::unordered_map<std::string, Color>;
     using txt_map = std::unordered_map<std::string, std::vector<std::string>>;
     using b_map = std::unordered_map<std::string, std::vector<float>>;
@@ -103,9 +92,9 @@ struct page {
 
     void set(std::string& k, float v) {
         if (params.find(k) != params.end()) {
-            params[k].value = v;
+            params[k] = v;
         } else {
-            params.insert({k, {v}});
+            params.insert({k, v});
         }
     }
 
