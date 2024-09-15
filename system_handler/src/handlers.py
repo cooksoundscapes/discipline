@@ -1,18 +1,36 @@
 from pythonosc.udp_client import SimpleUDPClient
-from jack_utils import *
+from system_utils import *
 from time import sleep
+
+'''
+UI:
+* CPU load
+* JACk status
+* static IP
+pd status
+jack change preset:
+    filtra a lista de presets só pelos cards que existem em self.sound_cards;
+    ultima opção é um "other" e aí vc pode escolher um card que nao tem preset
+pd settings:
+    restart DSP
+    change main patch - como??
+system:
+    reboot
+    shutdown
+'''
 
 class AppState():
     def __init__(self):
         self.ui_client = SimpleUDPClient("localhost", 7777)
         self.at_home_screen = True
-        self.jack_presets = [
-            {"name": "internal", "card": "Generic", "rate": 48000, "period": 256, "nperiod": 2, "inchan": 2, "outchan": 2},
-            {"name": "Zoom U22", "card": "U22", "rate": 48000, "period": 128, "nperiod": 3, "inchan": 2, "outchan": 2},
-            {"name": "UMC404", "card": "U192k", "rate": 48000, "period": 128, "nperiod": 3, "inchan": 4, "outchan": 4},
-            {"name": "UMC404 96kHz", "card": "Generic", "rate": 96000, "period": 128, "nperiod": 3, "inchan": 4, "outchan": 4}
-        ]
-        self.jack_clients = []
+        self.jack_presets = {
+            "internal": {"card": "Generic", "rate": 48000, "period": 256, "nperiod": 2, "inchan": 2, "outchan": 2},
+            "Zoom U22": {"card": "U22", "rate": 48000, "period": 128, "nperiod": 3, "inchan": 2, "outchan": 2},
+            "UMC404": {"card": "U192k", "rate": 48000, "period": 128, "nperiod": 3, "inchan": 4, "outchan": 4},
+            "UMC404 96kHz": {"card": "U192k", "rate": 96000, "period": 128, "nperiod": 3, "inchan": 4, "outchan": 4}
+        }
+        self.jack_clients = get_jack_clients()
+        self.sound_cards = get_sound_cards()
 
     def watchdog(self):
         try:
@@ -23,14 +41,6 @@ class AppState():
                 sleep(3)
         except KeyboardInterrupt:
             pass
-
-    def check_pd_service():
-        pass
-
-    def retrieve_sys_info(self):
-        jack_clients = get_jack_clients()
-        get_sound_cards()
-        
 
 app_state = AppState()
 

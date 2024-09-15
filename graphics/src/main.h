@@ -53,49 +53,34 @@ struct page {
             return value;
         }
     };
-    using params = std::unordered_map<std::string, param>;
-    using palette = std::unordered_map<std::string, Color>;
-    using textures = std::unordered_map<std::string, Texture2D>;
-    using texture_refs = std::unordered_map<std::string, std::string>;
+    using p_map = std::unordered_map<std::string, param>;
+    using c_map = std::unordered_map<std::string, Color>;
+    using txt_map = std::unordered_map<std::string, std::vector<std::string>>;
+    using b_map = std::unordered_map<std::string, std::vector<float>>;
+    using t_map = std::unordered_map<std::string, Texture2D>;
+    using tref_map = std::unordered_map<std::string, std::string>;
 
-    params p_map{};
-    palette c_map{};
-    textures t_map{};
-    texture_refs t_refs{};
+    p_map params{};
+    c_map palette{};
+    txt_map text_params{};
+    b_map buffers{};
+    t_map textures{};
+    tref_map t_refs{};
+
+    page(std::function<void(page*)> draw_fn)
+    : draw([this, draw_fn](){ draw_fn(this); }) {}
+
+    // build page with textures, palette and drawing fn. Params will be later initialized
+    page(c_map m_palette, tref_map m_textures, std::function<void(page*)> draw_fn)
+    : palette(m_palette), t_refs(m_textures), draw([this, draw_fn](){ draw_fn(this); }) {}
 
     page() = default;
-
-    // 100% stateless drawing
-    page(std::function<void()> draw_fn)
-    : draw(draw_fn) {}
-
-    // parameters only
-    page(params& init_params, std::function<void(params&)> draw_fn)
-    : p_map(init_params), draw([this, draw_fn](){ draw_fn(p_map); }) {}
-
-    // palette only
-    page(palette colors, std::function<void(palette&)> draw_fn)
-    : c_map(colors), draw([this, draw_fn](){ draw_fn(c_map); }) {}
-
-    // parameters & palette
-    page(
-        params init_params,
-        palette colors,
-        std::function<void(params&, palette&)> draw_fn
-    ) : p_map(init_params), c_map(colors), draw([this, draw_fn](){ draw_fn(p_map, c_map); }) {}
-
-    // parameters & palette & textures
-    page(
-        params init_params,
-        palette colors,
-        texture_refs tex_refs,
-        std::function<void(params&, palette&, textures&)> draw_fn
-    ) : p_map(init_params),
-        c_map(colors),
-        t_refs(tex_refs),
-        draw([this, draw_fn](){ draw_fn(p_map, c_map, t_map); }) {}
     
     std::function<void()> draw;
+
+    void operator =(std::function<void(page*)> draw_fn) {
+        draw = [this, draw_fn]{ draw_fn(this); };
+    }
 
     void operator()() { 
         draw();
@@ -103,21 +88,49 @@ struct page {
 
     void load_textures() {
         for (auto& ref : t_refs) {
-            t_map.insert({ref.first, LoadTexture(("../assets/" + ref.second).c_str())});
-            //SetTextureFilter(t_map[ref.first], TEXTURE_FILTER_ANISOTROPIC_8X);
+            textures.insert({ref.first, LoadTexture(("../assets/" + ref.second).c_str())});
+            //SetTextureFilter(textures[ref.first], TEXTURE_FILTER_ANISOTROPIC_8X);
         }
         t_refs.clear();
     }
 
     void unload_textures() {
-        for (auto& tx : t_map) {
+        for (auto& tx : textures) {
             UnloadTexture(tx.second);
         }
-        t_map.clear();
+        textures.clear();
     }
 
     void set(std::string& k, float v) {
-        p_map[k].value = v;
+        if (params.find(k) != params.end()) {
+            params[k].value = v;
+        } else {
+            params.insert({k, {v}});
+        }
+    }
+
+    void set(std::string& k, std::string v) {
+        if (text_params.find(k) != text_params.end()) {
+            text_params[k] = {v};
+        } else {
+            text_params.insert({k, {v}});
+        }
+    }
+
+    void set(std::string& k, std::vector<std::string> v) {
+        if (text_params.find(k) != text_params.end()) {
+            text_params[k] = v;
+        } else {
+            text_params.insert({k, v});
+        }
+    }
+
+    void set(std::string& k, std::vector<float> v) {
+        if (buffers.find(k) != buffers.end()) {
+            buffers[k] = v;
+        } else {
+            buffers.insert({k, v});
+        }
     }
 };
 
@@ -128,7 +141,6 @@ inline std::unordered_map<std::string, page*> pages{};
 inline std::mutex mtx;
 inline std::string current_page{HOME};
 inline audio_sink* audio = nullptr;
-inline std::unordered_map<std::string, std::vector<float>> param_lists{};
 
 // global fonts
 #define MONOSPACE_FONT "../assets/fonts/Big Pixel demo.otf"

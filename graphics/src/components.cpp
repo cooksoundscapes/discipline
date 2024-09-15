@@ -23,7 +23,7 @@ void HSlider(Rectangle bounds, const char* name, page::param& p) {
     DrawRectangle(
         bounds.x + name_s + 6,
         bounds.y + 2,
-        (int)((p.value/(p.max - p.min))*(bounds.width - 4)),
+        (int)((p/(p.max - p.min))*(bounds.width - 4)),
         bounds.height - 4,
         RAYWHITE
     );
@@ -33,7 +33,7 @@ void VSlider(Rectangle bounds, const char* name, page::param& p, std::string pos
     int compensation = (bounds.width - MeasureText(name, 20)) / 2;
     DrawRectangleLines(bounds.x - compensation, bounds.y, bounds.width, bounds.height, RAYWHITE);
     DrawText(name, bounds.x, bounds.y-20, 20, RAYWHITE);
-    int value_h = std::max(0.0f, std::min(1.0f, ((p.value - p.min) / (p.max - p.min)))) * bounds.height - 4;
+    int value_h = std::max(0.0f, std::min(1.0f, ((p - p.min) / (p.max - p.min)))) * bounds.height - 4;
 
     DrawRectangle(
         bounds.x - compensation + 2,
@@ -42,7 +42,7 @@ void VSlider(Rectangle bounds, const char* name, page::param& p, std::string pos
         value_h,
         RAYWHITE
     );
-    const char* s_val = (f2s(p.value)+postfix).c_str();
+    const char* s_val = (f2s(p)+postfix).c_str();
     int v_comp = (bounds.width - MeasureText(s_val, 10)) / 2;
     DrawText(s_val, bounds.x - compensation + v_comp, bounds.height+bounds.y+2, 10, RAYWHITE);
 }

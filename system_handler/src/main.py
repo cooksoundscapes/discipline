@@ -3,8 +3,6 @@ from handlers import app_state
 import handlers
 
 def main():
-    app_state.retrieve_sys_info()
-
     endpoints = [
         ("/encoders/*", handlers.encoders),
         ("/seq-buttons/*", handlers.seq_buttons),

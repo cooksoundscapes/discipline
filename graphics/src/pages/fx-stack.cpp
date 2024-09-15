@@ -166,46 +166,7 @@ static constexpr int INSTR_IN = 1;
 static constexpr int INSTR_OUT = 2;
 
 page fx_stack = {
-    {
-        {"current-page", {PAGE::GENERAL}},
-        {"global-bpm", {120}},
-        {"gain", {0, -50, 12}},
-        {"master-volume", {0, -50, 12}},
-        {"lfo-1-target", {MOD_TARGET::NONE}},
-        {"lfo-2-target", {MOD_TARGET::NONE}},
-        {"envelope-target", {MOD_TARGET::NONE}},
-        {"noise-target", {MOD_TARGET::NONE}},
-        {"lfo-1-rate", {0}},
-        {"lfo-1-depth", {0}},
-        {"lfo-1-wave", {WAVEFORM::TRI}},
-        {"lfo-1-ratio", {BPM_RATIO::NOT_SET}},
-        {"lfo-2-rate", {0}},
-        {"lfo-2-depth", {0}},
-        {"lfo-2-wave", {WAVEFORM::TRI}},
-        {"lfo-2-ratio", {BPM_RATIO::NOT_SET}},
-        {"env-gain", {0}},
-        {"env-decay", {0}},
-        {"env-min", {0}},
-        {"env-max", {0}},
-        {"noise-rate", {0}},
-        {"noise-depth", {0}},
-        {"noise-steps", {0}},
-        {"noise-seed", {0}},
-        {"quantizer", {0, 0, 1}},
-        {"decimator", {0, 0, 1}},
-        {"doubler-amt", {0, 0, 1}},
-        {"doubler-delay", {0, 0, 1}},
-        {"filter-cutoff", {1, 0, 21000}},
-        {"filter-q", {0.2, 0, 4}},
-        {"filter-type", {FILT_TYPE::LOWPASS}},
-        {"delay-level", {0, 0, 1}},
-        {"delay-fdbk", {0, 0, 1}},
-        {"delay-time", {0, 0, 2000}},
-        {"delay-ratio", {BPM_RATIO::EIGHT_D}},
-        {"delay-hip", {0, 0, 1}},
-        {"delay-lop", {0, 0, 1}},
-        {"delay-mod", {0, 0, 1}}
-    },  
+    // palette
     {
         {"red", hex("#EF3E36")},
         {"ylw", hex("#EDB88B")},
@@ -213,6 +174,7 @@ page fx_stack = {
         {"blu", hex("#17BEBB")},
         {"grey", hex("#2E282A")}
     },
+    // textures
     {
         {"metronome", "metronome.png"},
         {"notes", "notes.png"},
@@ -225,8 +187,10 @@ page fx_stack = {
         {"hip", "hip.png"},
         {"lop", "lop.png"}
     },
-    [](page::params& params, page::palette& palette, page::textures& textures)
-    {
+    [](page* page) {
+        auto& params = page->params;
+        auto& palette = page->palette;
+        auto& textures = page->textures;
         // 1st the header which is constant
         ClearBackground(BLACK);
         DrawRectangle(0, 0, SCREEN_W, HEADER_H, palette["ylw"]);

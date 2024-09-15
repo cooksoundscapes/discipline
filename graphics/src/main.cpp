@@ -22,10 +22,7 @@ inline void safe_draw() {
  * Begin main function
  */
 int main() {
-    #ifdef __linux__
-        osc_server serv;
-    #endif
-
+    osc_server serv;
     audio_sink_impl snd_inputs(AUDIO_CHANNEL_COUNT);
     audio = &snd_inputs;
 
