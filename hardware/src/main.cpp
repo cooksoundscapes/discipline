@@ -115,7 +115,9 @@ int main() {
     add_gpio_interrupt(GPIO_ENCODERS_INT_PIN, &encoders);
 
     // live until called out
-    while(true) {}
+    while(true) {
+        usleep(1000);
+    }
 
     /**
      * Cleanup

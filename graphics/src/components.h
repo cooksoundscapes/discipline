@@ -44,4 +44,6 @@ extern Color hueShift(float r);
 
 extern void VUMeterV(float x, float y, int w, float h, int chan);
 
+extern void VMenu(std::string items, int x, int y, int selected, int fsize, int rect_w, Color txtcol, Color rectcol);
+
 extern void TextList(std::string list, const std::unordered_map<int, int>& options,int x, int y, int selected, Color text_col, Color rect_col);

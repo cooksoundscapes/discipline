@@ -15,28 +15,8 @@
 #define SCREEN_H 240
 #define TARGET_FPS 60
 #define OSC_PORT "7777"
-#define HOME "fx_stack"
+#define HOME "home"
 #define AUDIO_CHANNEL_COUNT 8
-
-/**
- * Inline helper functions
- */
-inline Color hex(const char* h) {
-    unsigned int r, g, b;
-    std::sscanf(h, "#%02x%02x%02x", &r, &g, &b);
-    return Color{
-        static_cast<unsigned char>(r),
-        static_cast<unsigned char>(g),
-        static_cast<unsigned char>(b),
-        255
-    };
-}
-
-inline std::string f2s(float f) {
-    std::ostringstream r;
-    r << std::fixed << std::setprecision(2) << f;
-    return r.str();
-}
 
 /**
  * page struct definition & page registering macro
@@ -44,7 +24,7 @@ inline std::string f2s(float f) {
 struct page {
     using p_map = std::unordered_map<std::string, float>;
     using c_map = std::unordered_map<std::string, Color>;
-    using txt_map = std::unordered_map<std::string, std::vector<std::string>>;
+    using txt_map = std::unordered_map<std::string, std::string>;
     using b_map = std::unordered_map<std::string, std::vector<float>>;
     using t_map = std::unordered_map<std::string, Texture2D>;
     using tref_map = std::unordered_map<std::string, std::string>;
@@ -100,14 +80,6 @@ struct page {
 
     void set(std::string& k, std::string v) {
         if (text_params.find(k) != text_params.end()) {
-            text_params[k] = {v};
-        } else {
-            text_params.insert({k, {v}});
-        }
-    }
-
-    void set(std::string& k, std::vector<std::string> v) {
-        if (text_params.find(k) != text_params.end()) {
             text_params[k] = v;
         } else {
             text_params.insert({k, v});
@@ -136,6 +108,35 @@ inline audio_sink* audio = nullptr;
 #define REGULAR_FONT "../assets/fonts/BebasNeue-Regular.ttf"
 inline Font font_mono;
 inline Font font_regular;
+
+/**
+ * Inline helper functions
+ */
+inline Color hex(const char* h) {
+    unsigned int r, g, b;
+    std::sscanf(h, "#%02x%02x%02x", &r, &g, &b);
+    return Color{
+        static_cast<unsigned char>(r),
+        static_cast<unsigned char>(g),
+        static_cast<unsigned char>(b),
+        255
+    };
+}
+
+inline std::string f2s(float f) {
+    std::ostringstream r;
+    r << std::fixed << std::setprecision(2) << f;
+    return r.str();
+}
+
+inline std::string f2s(const char* param) {
+    float v = pages[current_page]->params[param];
+    return f2s(v);
+}
+
+inline float tsize(std::string src, int fsize, double factor) {
+    return src.length() * fsize * factor;
+}
 
 /**
  * Macro for registering pages

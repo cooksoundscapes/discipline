@@ -103,6 +103,11 @@ void VUMeterV(float x, float y, int w, float h, int chan) {
     }
 }
 
+void VMenu(std::string items, int x, int y, int selected, int fsize, int rect_w, Color txtcol, Color rectcol) {
+    DrawRectangle(x-2, y + (selected*(fsize+2)), rect_w, fsize, rectcol);
+    RegText(items, x, y, fsize, txtcol);
+}
+
 void TextList(std::string list, const std::unordered_map<int, int>& options,int x, int y, int selected, Color text_col, Color rect_col)
 {   
     if (options.find(selected) != options.end()) {

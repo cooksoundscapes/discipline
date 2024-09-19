@@ -52,7 +52,7 @@
         K3 MODULATION AMT
  */
 
-#include "../components.h"
+#include "components.h"
 
 enum PAGE {
     GENERAL = 0,

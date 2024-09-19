@@ -1,5 +1,4 @@
-from server import Server
-from handlers import app_state
+from server import ServerThread
 import handlers
 
 def main():
@@ -8,8 +7,8 @@ def main():
         ("/seq-buttons/*", handlers.seq_buttons),
         ("/nav-buttons/*", handlers.nav_buttons),
     ]
-    server = Server('localhost', 9001, endpoints)
-    server.start()
+    with ServerThread('localhost', 9001, endpoints):
+        handlers.app.watchdog()
 
 if __name__ == "__main__":
     main()

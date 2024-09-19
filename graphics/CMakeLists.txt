@@ -4,7 +4,7 @@ project(discipline_graphics LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED true)
 
-file(GLOB PAGES "src/pages/*.cpp")
+file(GLOB PAGES "pages/*.cpp")
 
 set(SOURCES src/main.cpp src/components.cpp src/audio-math-utils.cpp ${PAGES})
 
@@ -17,6 +17,7 @@ link_directories(lib)
 
 add_executable(discipline_graphics ${SOURCES})
 
+target_include_directories(discipline_graphics PUBLIC src)
 target_link_libraries(discipline_graphics raylib)
 
 if (WIN32)
